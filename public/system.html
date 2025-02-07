@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Stream</title>
+    <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
+    <section class="hero">
     <h2>Live Stream</h2>
-    <img id="videoFrame" style="width: 500px; height: 400px; border: 2px solid black;"/>
-
+    <img id="videoFrame" style="width: 500px; height: 400px"/>
+</section>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();

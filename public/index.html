@@ -1,72 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
     <title>WebRTC Image Stream</title>
-</head>
-<body>
-    <h2>Upload Images to Stream</h2>
-    <input type="file" id="imageInput" multiple accept="image/*">
-    <button onclick="uploadImages()">Upload & Start Streaming</button>
-    <button onclick="stopStreaming()">Stop Streaming</button> <!-- Stop Streaming Button -->
-
-    <h2>Live Stream</h2>
-    <img id="videoFrame" style="width: 500px; height: 400px; border: 2px solid black;"/>
-
+  </head>
+  <body>
+    <section class="hero">
+        <div class="flex">
+      <div>
+        <h2>Live Stream</h2>
+        <img
+          id="videoFrame"
+          style="width: 500px; height: 400px"
+        />
+      </div>
+      <div>
+        <h1>Upload Images to<br/> Stream</h1>
+        <input type="file" id="imageInput" multiple accept="image/*" />
+        <div class="button_streaming">
+          <button onclick="uploadImages()">Upload & Start Streaming</button>
+          <button onclick="stopStreaming()">Stop Streaming</button>
+          <!-- Stop Streaming Button -->
+        </div>
+      </div>
+    </section>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
-        const imageInput = document.getElementById("imageInput");
-        const videoFrame = document.getElementById("videoFrame");
+      const socket = io();
+      const imageInput = document.getElementById("imageInput");
+      const videoFrame = document.getElementById("videoFrame");
 
-        // Upload images to the server
-        function uploadImages() {
-            const files = imageInput.files;
-            if (files.length === 0) {
-                alert("Please select images first.");
-                return;
-            }
-
-            const formData = new FormData();
-            for (let file of files) {
-                formData.append("images", file);
-            }
-
-            fetch("/upload", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error("Upload failed:", error));
+      // Upload images to the server
+      function uploadImages() {
+        const files = imageInput.files;
+        if (files.length === 0) {
+          alert("Please select images first.");
+          return;
         }
 
-        // Stop streaming
-        function stopStreaming() {
-            fetch("/stop-stream", {
-                method: "POST"
-            })
-            .then(response => response.json())
-            .then(data => console.log(data.message))
-            .catch(error => console.error("Stop streaming failed:", error));
+        const formData = new FormData();
+        for (let file of files) {
+          formData.append("images", file);
         }
 
-        // Receive image frames and display
-        socket.on("frame", (imageData) => {
-            videoFrame.src = imageData;
-        });
+        fetch("/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.error("Upload failed:", error));
+      }
 
-        // Handle stream start notification
-        socket.on("streamStart", (data) => {
-            console.log(data.message);
-        });
+      // Stop streaming
+      function stopStreaming() {
+        fetch("/stop-stream", {
+          method: "POST",
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data.message))
+          .catch((error) => console.error("Stop streaming failed:", error));
+      }
 
-        // Handle stream stop notification
-        socket.on("streamStop", (data) => {
-            console.log(data.message);
-            videoFrame.src = ""; // Clear the image
-        });
+      // Receive image frames and display
+      socket.on("frame", (imageData) => {
+        videoFrame.src = imageData;
+      });
+
+      // Handle stream start notification
+      socket.on("streamStart", (data) => {
+        console.log(data.message);
+      });
+
+      // Handle stream stop notification
+      socket.on("streamStop", (data) => {
+        console.log(data.message);
+        videoFrame.src = ""; // Clear the image
+      });
     </script>
-</body>
+  </body>
 </html>
