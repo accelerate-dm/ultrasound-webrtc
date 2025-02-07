@@ -2,7 +2,8 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const multer = require("multer");
-
+let dotenv = require("dotenv")
+dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -52,7 +53,6 @@ io.on("connection", (socket) => {
         clearInterval(interval);
     });
 });
-
 // Start the server
 const PORT = process.env.PORT || 5555;
 server.listen(PORT, '0.0.0.0', () => {
