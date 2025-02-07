@@ -9,7 +9,8 @@
     <h2>Upload Images to Stream</h2>
     <input type="file" id="imageInput" multiple accept="image/*">
     <button onclick="uploadImages()">Upload & Start Streaming</button>
-    
+    <button onclick="stopStreaming()">Stop Streaming</button> <!-- Stop Streaming Button -->
+
     <h2>Live Stream</h2>
     <img id="videoFrame" style="width: 500px; height: 400px; border: 2px solid black;"/>
 
@@ -41,14 +42,30 @@
             .catch(error => console.error("Upload failed:", error));
         }
 
-        // Receive image frames and display as video
+        // Stop streaming
+        function stopStreaming() {
+            fetch("/stop-stream", {
+                method: "POST"
+            })
+            .then(response => response.json())
+            .then(data => console.log(data.message))
+            .catch(error => console.error("Stop streaming failed:", error));
+        }
+
+        // Receive image frames and display
         socket.on("frame", (imageData) => {
             videoFrame.src = imageData;
         });
 
         // Handle stream start notification
         socket.on("streamStart", (data) => {
-            console.log(data,"streaming"); // Stream started message
+            console.log(data.message);
+        });
+
+        // Handle stream stop notification
+        socket.on("streamStop", (data) => {
+            console.log(data.message);
+            videoFrame.src = ""; // Clear the image
         });
     </script>
 </body>

@@ -23,6 +23,12 @@
         socket.on("streamStart", (data) => {
             console.log(data.message);
         });
+
+        // Handle stream stop event
+        socket.on("streamStop", (data) => {
+            console.log(data.message);
+            videoFrame.src = ""; // Clear the image when stream stops
+        });
     </script>
 </body>
 </html>
