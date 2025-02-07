@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Image Stream</title>
+</head>
+<body>
+    <h2>Upload Images to Stream</h2>
+    <input type="file" id="imageInput" multiple accept="image/*">
+    <button onclick="uploadImages()">Upload & Start Streaming</button>
+    
+    <h2>Live Stream</h2>
+    <img id="videoFrame" style="width: 500px; height: 400px; border: 2px solid black;"/>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const imageInput = document.getElementById("imageInput");
+        const videoFrame = document.getElementById("videoFrame");
+
+        // Upload images to the server
+        function uploadImages() {
+            const files = imageInput.files;
+            if (files.length === 0) {
+                alert("Please select images first.");
+                return;
+            }
+
+            const formData = new FormData();
+            for (let file of files) {
+                formData.append("images", file);
+            }
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error("Upload failed:", error));
+        }
+
+        // Receive image frames and display as video
+        socket.on("frame", (imageData) => {
+            videoFrame.src = imageData;
+        });
+
+        // Handle stream start notification
+        socket.on("streamStart", (data) => {
+            console.log(data,"streaming"); // Stream started message
+        });
+    </script>
+</body>
+</html>

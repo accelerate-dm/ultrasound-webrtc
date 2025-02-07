@@ -1,0 +1,8 @@
+.DS_Store
+coverage/*
+package-lock.json
+.vscode/*
+uploads/*
+pnpm-lock.yaml
+node_modules/
+.env
